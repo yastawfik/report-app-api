@@ -64,6 +64,9 @@ class ReportController extends Controller
         $report = Report::findOrFail($id);
         $report->update($validated);
 
+        $report->weights = $request->input('weights');
+         $report->save();
+
         return response()->json($report, 200);
     }
 
