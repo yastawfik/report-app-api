@@ -21,3 +21,5 @@ Route::put('/reports/{id}', [ReportController::class, 'update']);
 Route::get('/reports/{id}/generate-pdf', [ReportController::class, 'download']);
 
 Route::get('/reports/all', [ReportController::class, 'getAllReports']);
+Route::put('/subreports/{id}', [ReportController::class, 'updateSubreport']);
+

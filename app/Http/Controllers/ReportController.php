@@ -40,6 +40,7 @@ public function store(Request $request)
         'subreports.*.brick_type' => 'required|string',
         'subreports.*.weights' => 'required|array|min:1',
         'subreports.*.weights.*' => 'numeric',
+        'subreports.*.average_weight' => 'required|numeric',
     ]);
 
     // Create the report
@@ -56,33 +57,14 @@ public function store(Request $request)
             'zone' => $sub['zone'],
             'brick_type' => $sub['brick_type'],
             'weights' => json_encode($sub['weights']),
-            'average_weight' => collect($sub['weights'])->average(),
+            'average_weight' => $sub['average_weight'],
         ]);
     }
 
     return response()->json($report->load('subreports', 'user'), 201);
 }
     // Update an existing report
-public function update(Request $request, Report $report)
-{
-    $validated = $request->validate([
-        'zone' => 'required|string',
-        'brick_type' => 'required|string',
-        'weights' => 'required|array',
-        'average_weight' => 'required|numeric',
 
-    ]);
-
-    $report->update([
-        'zone' => $validated['zone'],
-        'brick_type' => $validated['brick_type'],
-        'weights' => json_encode($validated['weights']),
-        'average_weight' => $validated['average_weight'],
-        'shift' => $validated['shift'],
-    ]);
-
-    return response()->json(['message' => 'Report updated successfully']);
-}
 
     // Delete a report
     public function destroy($id)
@@ -122,5 +104,24 @@ public function getAllReports()
     $reports = Report::with('user')->get(); // eager-loads the associated user
     return response()->json($reports);
 }
+public function updateSubreport(Request $request, $id)
+{
+    $validated = $request->validate([
+        'zone' => 'required|string',
+        'brick_type' => 'required|string',
+        'weights' => 'required|array',
+        'average_weight' => 'required|numeric',
+    ]);
 
+    $subreport = Subreport::findOrFail($id);
+
+    $subreport->update([
+        'zone' => $validated['zone'],
+        'brick_type' => $validated['brick_type'],
+        'weights' => json_encode($validated['weights']),
+        'average_weight' => $validated['average_weight'],
+    ]);
+
+    return response()->json(['message' => 'Subreport updated successfully']);
+}
 }
