@@ -86,8 +86,11 @@ class ReportController extends Controller
 
         $pdf = PDF::loadView('reports.pdf', compact('report'));
         $filename = 'rapport_' . $report->id . '.pdf';
-        $path = storage_path('app/public/' . $filename);
-        $pdf->save($path);
+         $filePath = storage_path("app/reports/{$report->file_name}");
+
+         if (file_exists($filePath)) {
+        return response()->download($filePath);
+         }
 
         return response()->json([
             'url' => asset('storage/' . $filename)
