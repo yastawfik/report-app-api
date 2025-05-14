@@ -6,9 +6,11 @@ use App\Http\Resources\UserResource;
 use App\Models\BrickWeight;
 
 
+
 class Report extends Model
 {
-    protected $fillable = ['user_id','zone', 'weights', 'average_weight', 'datetime'];
+    protected $fillable = ['user_id','zone', 'weights', 'average_weight', 'datetime', 'brick_type','username',  'shift'];
+    protected $hidden = ['user_id', 'updated_at'];
 
     protected $casts = [
         'weights' => 'array',
@@ -18,6 +20,7 @@ class Report extends Model
     {
         return $this->belongsTo(User::class);  // Assumes a 'user_id' column exists in 'reports' table
     }
+
     public function toArray()
     {
         return [
@@ -25,7 +28,8 @@ class Report extends Model
             'title' => $this->title,
             'content' => $this->content,
             'created_at' => $this->created_at,
-            'user' => $this->user ? new UserResource($this->user) : null,  // Check if user is loaded
+            'user' => $this->user ? new UserResource($this->user) : null,
+            // Check if user is loaded
         ];
     }
     public function brickWeights()

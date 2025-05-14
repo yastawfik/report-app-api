@@ -36,6 +36,7 @@ class ReportController extends Controller
             'weights.*' => 'numeric',
             'average_weight' => 'required|numeric', // ✅ update this
             'datetime' => 'required|date',
+            'shift' => 'required|string',
         ]);
 
         $report = Report::create([
@@ -45,6 +46,8 @@ class ReportController extends Controller
             'weights' => json_encode($validated['weights']),
             'average_weight' => $validated['average_weight'], // ✅ correct field
             'datetime' => $validated['datetime'],
+            'username' => optional($request->user())->name,
+            'shift' => $request->shift, // ✅ save shift
         ]);
         $report->load('user');
 
@@ -54,21 +57,26 @@ class ReportController extends Controller
 
     }
     // Update an existing report
-    public function update(Request $request, $id)
-    {
-        $validated = $request->validate([
-            'title' => 'sometimes|required|string|max:255',
-            'content' => 'sometimes|required|string',
-        ]);
+public function update(Request $request, Report $report)
+{
+    $validated = $request->validate([
+        'zone' => 'required|string',
+        'brick_type' => 'required|string',
+        'weights' => 'required|array',
+        'average_weight' => 'required|numeric',
 
-        $report = Report::findOrFail($id);
-        $report->update($validated);
+    ]);
 
-        $report->weights = $request->input('weights');
-         $report->save();
+    $report->update([
+        'zone' => $validated['zone'],
+        'brick_type' => $validated['brick_type'],
+        'weights' => json_encode($validated['weights']),
+        'average_weight' => $validated['average_weight'],
+        'shift' => $validated['shift'],
+    ]);
 
-        return response()->json($report, 200);
-    }
+    return response()->json(['message' => 'Report updated successfully']);
+}
 
     // Delete a report
     public function destroy($id)
@@ -80,21 +88,33 @@ class ReportController extends Controller
     }
 
 
-    public function download($id)
-    {
-        $report = Report::with(['user', 'brickWeights'])->findOrFail($id);
+public function download($id)
+{
+    $report = Report::with(['user', 'brickWeights'])->findOrFail($id);
 
-        $pdf = PDF::loadView('reports.pdf', compact('report'));
-        $filename = 'rapport_' . $report->id . '.pdf';
-         $filePath = storage_path("app/reports/{$report->file_name}");
+    // Generate the filename
+    $filename = 'rapport_' . $report->id . '.pdf';
 
-         if (file_exists($filePath)) {
-        return response()->download($filePath);
-         }
+    // Set the file path
+    $filePath = storage_path("app/reports/{$filename}");
 
-        return response()->json([
-            'url' => asset('storage/' . $filename)
-        ]);
+    // Ensure the directory exists
+    if (!file_exists(dirname($filePath))) {
+        mkdir(dirname($filePath), 0775, true);
     }
+
+    // Generate PDF
+    $pdf = Pdf::loadView('reports.pdfreport', compact('report'));
+
+    // Save the PDF to the file system
+    $pdf->save($filePath);
+
+    return response()->download($filePath);
+}
+public function getAllReports()
+{
+    $reports = Report::with('user')->get(); // eager-loads the associated user
+    return response()->json($reports);
+}
 
 }

@@ -15,6 +15,9 @@ Route::middleware('auth:sanctum')->get('/me', [AuthController::class, 'me']);
 
 Route::middleware('auth:sanctum')->post('/reports', [ReportController::class, 'store']);
 
-Route::get('/reports/{id}/download', [ReportPdfController::class, 'download']);
+Route::get('/reports/{id}/download', [ReportController::class, 'download']);
 Route::put('/reports/{id}', [ReportController::class, 'update']);
 
+Route::get('/reports/{id}/generate-pdf', [ReportController::class, 'download']);
+
+Route::get('/reports/all', [ReportController::class, 'getAllReports']);

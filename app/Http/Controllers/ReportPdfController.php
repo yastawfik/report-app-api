@@ -20,7 +20,7 @@ class ReportPdfController extends Controller
             $maxRows = collect($groupedWeights)->map(function ($item) {
                 return count($item);
             })->max();
-            
+
         $pdf = Pdf::loadView('pdf.report', compact('report', 'groupedWeights'));
         return $pdf->download("rapport_{$report->id}.pdf");
     }
