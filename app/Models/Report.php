@@ -4,6 +4,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Http\Resources\UserResource;
 use App\Models\BrickWeight;
+use App\Models\SubReport;
 
 
 
@@ -36,5 +37,10 @@ class Report extends Model
 {
     return $this->hasMany(BrickWeight::class);
 }
+public function subreports()
+{
+    return $this->hasMany(SubReport::class); // assuming you have a SubReport model
+}
+
 
 }

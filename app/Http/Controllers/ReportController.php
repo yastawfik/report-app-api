@@ -6,6 +6,7 @@ use App\Models\Report;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Http\Resources\ReportResource;
+use App\Models\Subreport;
 
 class ReportController extends Controller
 {
@@ -18,44 +19,49 @@ class ReportController extends Controller
         );;
     }
 
-    // Show a single report
-    public function show($id)
-    {
-        $report = Report::findOrFail($id);
-        return response()->json($report, 200);
-    }
+
+ public function show($id)
+{
+    $report = Report::with('user', 'subreports')->findOrFail($id);
+    return response()->json($report);
+}
 
     // Store a new report
 
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'zone' => 'required|string',
-            'brick_type' => 'required|string',
-            'weights' => 'required|array',
-            'weights.*' => 'numeric',
-            'average_weight' => 'required|numeric', // ✅ update this
-            'datetime' => 'required|date',
-            'shift' => 'required|string',
+
+public function store(Request $request)
+{
+    // Validate incoming request
+    $validated = $request->validate([
+        'shift' => 'required|string',
+        'datetime' => 'required|date',
+        'subreports' => 'required|array|min:1',
+        'subreports.*.zone' => 'required|string',  // Ensure zone is always present
+        'subreports.*.brick_type' => 'required|string',
+        'subreports.*.weights' => 'required|array|min:1',
+        'subreports.*.weights.*' => 'numeric',
+    ]);
+
+    // Create the report
+    $report = Report::create([
+        'user_id' => optional($request->user())->id,
+        'datetime' => $validated['datetime'],
+        'shift' => $validated['shift'],
+        'username' => optional($request->user())->name,
+    ]);
+
+    // Save each subreport
+    foreach ($validated['subreports'] as $sub) {
+        $report->subreports()->create([
+            'zone' => $sub['zone'],
+            'brick_type' => $sub['brick_type'],
+            'weights' => json_encode($sub['weights']),
+            'average_weight' => collect($sub['weights'])->average(),
         ]);
-
-        $report = Report::create([
-            'user_id' => optional($request->user())->id,
-            'zone' => $validated['zone'],
-            'brick_type' => $validated['brick_type'],
-            'weights' => json_encode($validated['weights']),
-            'average_weight' => $validated['average_weight'], // ✅ correct field
-            'datetime' => $validated['datetime'],
-            'username' => optional($request->user())->name,
-            'shift' => $request->shift, // ✅ save shift
-        ]);
-        $report->load('user');
-
-        return response()->json($report, 201);
-
-
-
     }
+
+    return response()->json($report->load('subreports', 'user'), 201);
+}
     // Update an existing report
 public function update(Request $request, Report $report)
 {
