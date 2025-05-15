@@ -8,7 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class SubReport extends Model
 {
     use HasFactory;
- protected $table = 'sub_reports';
+    protected $table = 'sub_reports'; // important!
+
+    protected $casts = [
+        'weights' => 'array', // if weights are JSON stored as string
+    ];
     // Define the fillable attributes
     protected $fillable = [
         'report_id',   // foreign key to the Report
@@ -22,9 +26,10 @@ class SubReport extends Model
 
     ];
 
+
     // Define the relationship with the Report
- public function report()
-{
-    return $this->belongsTo(Report::class);
-}
+  public function report()
+ {
+      return $this->belongsTo(Report::class, 'report_id');
+ }
 }
