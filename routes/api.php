@@ -3,9 +3,11 @@
 use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\ReportPdfController;
 
+
+Route::get('/reports/all', [ReportController::class, 'allReports']);
 Route::apiResource('reports', ReportController::class);
+
 Route::get('/reports', [ReportController::class, 'index']);
 
 Route::post('/register', [AuthController::class, 'register']);
@@ -18,9 +20,11 @@ Route::middleware('auth:sanctum')->post('/reports', [ReportController::class, 's
 Route::get('/reports/{id}/download', [ReportController::class, 'download']);
 Route::put('/reports/{id}', [ReportController::class, 'update']);
 
+
 Route::get('/reports/{id}/generate-pdf', [ReportController::class, 'download']);
 
-Route::get('/reports/all', [ReportController::class, 'getAllReports']);
+
 Route::put('/subreports/{id}', [ReportController::class, 'updateSubreport']);
 Route::delete('/reports/{id}', [ReportController::class, 'destroy']);
+
 

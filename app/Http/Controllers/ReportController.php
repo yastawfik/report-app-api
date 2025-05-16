@@ -16,7 +16,7 @@ class ReportController extends Controller
         return ReportResource::collection(
             Report::with('user')->get()
         );
-        
+
     }
 
     // Show a single report with subreports
@@ -107,11 +107,14 @@ public function download($id)
 }
 
     // Get all reports (used for admin view)
-    public function getAllReports()
-    {
-        $reports = Report::with('user')->get();
-        return response()->json($reports);
-    }
+
+
+public function allReports()
+{
+    $reports = Report::with(['user', 'subreports'])->get();
+
+    return response()->json($reports);
+}
 
     // Update an individual subreport
     public function updateSubreport(Request $request, $id)
