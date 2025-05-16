@@ -16,6 +16,7 @@ class ReportController extends Controller
         return ReportResource::collection(
             Report::with('user')->get()
         );
+        
     }
 
     // Show a single report with subreports
@@ -70,6 +71,10 @@ class ReportController extends Controller
     public function destroy($id)
     {
         $report = Report::findOrFail($id);
+
+        if ($report->locked) {
+        return response()->json(['message' => 'Ce rapport ne peut plus être supprimé.'], 403);
+    }
         $report->delete();
 
         return response()->json(['message' => 'Report deleted successfully.'], 200);
@@ -80,6 +85,11 @@ class ReportController extends Controller
 public function download($id)
 {
     $report = Report::with(['user', 'subreports'])->findOrFail($id);
+
+    if (!$report->locked) {
+        $report->locked = true;
+        $report->save();
+    }
 
     // Calculate max number of weights across all subreports
     $maxWeightCount = collect($report->subreports)->map(function ($sub) {

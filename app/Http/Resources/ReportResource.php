@@ -25,6 +25,7 @@ class ReportResource extends JsonResource
             'brick_type' => $this->brick_type,
             'created_at' => $this->created_at,
             'user' => new UserResource($this->whenLoaded('user')),
+            'locked' => $this->locked,
         ];
     }
 }
