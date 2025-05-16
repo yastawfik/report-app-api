@@ -75,22 +75,26 @@ class ReportController extends Controller
         return response()->json(['message' => 'Report deleted successfully.'], 200);
     }
 
-    // Download PDF version of a report
-    public function download($id)
-    {
-        $report = Report::with(['user', 'brickWeights'])->findOrFail($id);
-        $filename = 'rapport_' . $report->id . '.pdf';
-        $filePath = storage_path("app/reports/{$filename}");
+    // Download PDF version of a reportuse Barryvdh\DomPDF\Facade\Pdf;
 
-        if (!file_exists(dirname($filePath))) {
-            mkdir(dirname($filePath), 0775, true);
-        }
+public function download($id)
+{
+    $report = Report::with(['user', 'subreports'])->findOrFail($id);
 
-        $pdf = Pdf::loadView('reports.pdfreport', compact('report'));
-        $pdf->save($filePath);
+    // Calculate max number of weights across all subreports
+    $maxWeightCount = collect($report->subreports)->map(function ($sub) {
+        $weights = is_array($sub->weights) ? $sub->weights : json_decode($sub->weights, true);
+        return is_array($weights) ? count($weights) : 0;
+    })->max();
 
-        return response()->download($filePath);
-    }
+    // Pass data to view
+    $pdf = Pdf::loadView('report_pdf', [
+        'report' => $report,
+        'maxWeightCount' => $maxWeightCount
+    ]);
+
+    return $pdf->download("rapport_{$id}.pdf");
+}
 
     // Get all reports (used for admin view)
     public function getAllReports()
