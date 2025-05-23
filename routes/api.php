@@ -4,7 +4,10 @@ use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 
+Route::get('/reports/export-pdf', [ReportController::class, 'export']);
+Route::get('/reports/export-excel',[ReportController::class , 'exportExcel']);
 
+Route::get('/reports/export-csv', [ReportController::class, 'exportCsv']);
 Route::get('/reports/all', [ReportController::class, 'allReports']);
 Route::apiResource('reports', ReportController::class);
 
@@ -26,5 +29,6 @@ Route::get('/reports/{id}/generate-pdf', [ReportController::class, 'download']);
 
 Route::put('/subreports/{id}', [ReportController::class, 'updateSubreport']);
 Route::delete('/reports/{id}', [ReportController::class, 'destroy']);
+
 
 
