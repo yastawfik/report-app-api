@@ -2,62 +2,68 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <style>
-        body {
-            font-family: DejaVu Sans, sans-serif;
-            font-size: 13px;
-            margin: 40px;
-            color: #333;
-        }
+   <style>
+    @page {
+        margin: 20px;
+    }
 
-        h1 {
-            text-align: center;
-            color: #A45B17;
-            margin: 10px 0 5px;
-        }
+    body {
+        font-family: DejaVu Sans, sans-serif;
+        font-size: 12px;
+        margin: 0;
+        padding: 0;
+        color: #333;
+    }
 
-        .meta-info {
-            margin-top: 20px;
-            line-height: 1.6;
-        }
+    h1 {
+        text-align: center;
+        color: #A45B17;
+        margin: 10px 0 5px;
+    }
 
-        .meta {
-            font-weight: bold;
-        }
+    .meta-info {
+        margin: 10px 40px;
+        line-height: 1.5;
+    }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 25px;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-        }
+    .meta {
+        font-weight: bold;
+    }
 
-        th {
-            background-color: #F5E8D8;
-            color: #5C3D1E;
-            font-weight: bold;
-            padding: 8px;
-            border: 1px solid #ccc;
-        }
+    table {
+        width: 100%;
+        table-layout: fixed;
+        border-collapse: collapse;
+        margin: 25px 20px 0;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        word-wrap: break-word;
+    }
 
-        td {
-            padding: 7px;
-            border: 1px solid #ccc;
-            text-align: center;
-        }
+    th, td {
+        border: 1px solid #ccc;
+        padding: 6px;
+        text-align: center;
+        font-size: 11px;
+        word-break: break-word;
+    }
 
-        tr:nth-child(even) {
-            background-color: #fdf6ef;
-        }
+    th {
+        background-color: #F5E8D8;
+        color: #5C3D1E;
+        font-weight: bold;
+    }
 
-        .footer {
-            margin-top: 30px;
-            font-style: italic;
-            font-size: 12px;
-            text-align: right;
-        }
+    tr:nth-child(even) {
+        background-color: #fdf6ef;
+    }
 
-    </style>
+    .footer {
+        margin: 30px 40px 0;
+        font-style: italic;
+        font-size: 11px;
+        text-align: right;
+    }
+</style>
 </head>
 <body>
 
